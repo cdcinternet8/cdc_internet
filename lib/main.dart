@@ -339,9 +339,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _tapCount = 0;
   Timer? _tapResetTimer;
 
-  // Auto-refresh every 30 seconds while app is open
+  // Auto-refresh every 15 seconds while app is open
   Timer? _autoRefreshTimer;
-  static const Duration _pollInterval = Duration(seconds: 30);
+  static const Duration _pollInterval = Duration(seconds: 15);
+  bool _syncError = false;
+  DateTime? _lastSyncTime;
 
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
@@ -380,10 +382,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   void _startAutoRefresh() {
     _autoRefreshTimer?.cancel();
     _autoRefreshTimer = Timer.periodic(_pollInterval, (_) {
-      if (_isOnline) {
-        debugPrint('Auto-refreshing config from server...');
-        _syncConfig(showOverlay: false);
-      }
+      // Always try to sync — do NOT gate on _isOnline since
+      // that flag may not reflect actual server reachability.
+      debugPrint('Auto-refreshing config from server...');
+      _syncConfig(showOverlay: false);
     });
   }
 
@@ -431,10 +433,16 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       setState(() {
         _config = fresh;
         _isOnline = true;
+        _syncError = false;
+        _lastSyncTime = DateTime.now();
       });
-      debugPrint("Configuration synced successfully from server.");
+      debugPrint('Config synced from server at $_currentApiUrl');
     } catch (e) {
-      debugPrint("Failed to sync config: $e. Running on cached config.");
+      debugPrint('Sync failed [$_currentApiUrl]: $e');
+      setState(() {
+        _isOnline = false;
+        _syncError = true;
+      });
     } finally {
       if (showOverlay) {
         final elapsed = DateTime.now().difference(startTime).inMilliseconds;
@@ -596,8 +604,74 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: GestureDetector(
+                onTap: () => _syncConfig(showOverlay: false),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 400),
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _isSyncing
+                        ? const Color(0xFFF59E0B)   // orange = syncing
+                        : _syncError
+                            ? const Color(0xFFEF4444) // red = error
+                            : const Color(0xFF10B981), // green = live
+                    boxShadow: [
+                      BoxShadow(
+                        color: (_isSyncing
+                                ? const Color(0xFFF59E0B)
+                                : _syncError
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981))
+                            .withValues(alpha: 0.5),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        body: RefreshIndicator(
+        body: Column(
+          children: [
+            // Server error banner — shown when server is unreachable
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              child: _syncError
+                  ? GestureDetector(
+                      onTap: () => _syncConfig(showOverlay: false),
+                      child: Container(
+                        width: double.infinity,
+                        color: const Color(0xFFEF4444),
+                        padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.wifi_off_rounded, color: Colors.white, size: 13),
+                            SizedBox(width: 7),
+                            Text(
+                              'Server unreachable — tap to retry',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            Expanded(
+              child: RefreshIndicator(
           key: _refreshIndicatorKey,
           onRefresh: () => _syncConfig(showOverlay: true),
           color: const Color(0xFF1E40AF),
@@ -682,7 +756,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 ],
               ),
             ),
-          ),
+          ],
         ),
         bottomNavigationBar: _currentIndex == 0
             ? null
