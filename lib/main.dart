@@ -301,9 +301,10 @@ class ConfigService {
   }
 
   static Future<AppConfig> fetchConfigFromServer(String baseUrl) async {
-    final response = await http.get(Uri.parse('$baseUrl/api/config')).timeout(
-          const Duration(seconds: 4),
-        );
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/config'),
+      headers: {'Cache-Control': 'no-cache, no-store'},
+    ).timeout(const Duration(seconds: 8));
     if (response.statusCode == 200) {
       final parsed = jsonDecode(response.body);
       final newConfig = AppConfig.fromJson(parsed);
@@ -326,7 +327,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
   AppConfig _config = AppConfig.defaultConfig();
   bool _isOnline = false;
@@ -338,21 +339,52 @@ class _MainScreenState extends State<MainScreen> {
   int _tapCount = 0;
   Timer? _tapResetTimer;
 
+  // Auto-refresh every 30 seconds while app is open
+  Timer? _autoRefreshTimer;
+  static const Duration _pollInterval = Duration(seconds: 30);
+
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadInitialSettings();
     _initConnectivityListener();
+    _startAutoRefresh();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _connectivitySubscription?.cancel();
     _tapResetTimer?.cancel();
+    _autoRefreshTimer?.cancel();
     super.dispose();
+  }
+
+  // Re-fetch config when app comes back to foreground
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      debugPrint('App resumed — syncing config from server.');
+      _syncConfig(showOverlay: false);
+      _startAutoRefresh();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _autoRefreshTimer?.cancel();
+    }
+  }
+
+  void _startAutoRefresh() {
+    _autoRefreshTimer?.cancel();
+    _autoRefreshTimer = Timer.periodic(_pollInterval, (_) {
+      if (_isOnline) {
+        debugPrint('Auto-refreshing config from server...');
+        _syncConfig(showOverlay: false);
+      }
+    });
   }
 
   bool _showSyncOverlay = false;
