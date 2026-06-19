@@ -269,11 +269,16 @@ class AppConfig {
 class ConfigService {
   static const String _apiUrlKey = 'cdc_api_base_url';
   static const String _configKey = 'cdc_cached_config';
-  static const String defaultUrl = 'http://10.0.2.2:3000';
+  static const String defaultUrl = 'https://cdc-internet.onrender.com';
 
   static Future<String> getApiUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_apiUrlKey) ?? defaultUrl;
+    final stored = prefs.getString(_apiUrlKey);
+    if (stored == null || stored == 'http://10.0.2.2:3000' || stored == 'http://10.0.2.2:3000/') {
+      await prefs.setString(_apiUrlKey, defaultUrl);
+      return defaultUrl;
+    }
+    return stored;
   }
 
   static Future<void> saveApiUrl(String url) async {
