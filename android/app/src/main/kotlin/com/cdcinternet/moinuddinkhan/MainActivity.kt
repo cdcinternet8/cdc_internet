@@ -1,4 +1,4 @@
-package com.example.cdc_internet
+package com.cdcinternet.moinuddinkhan
 
 import io.flutter.embedding.android.FlutterActivity
 

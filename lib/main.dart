@@ -630,6 +630,20 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
+          actions: [
+            GestureDetector(
+              onTap: _handleLogoTap,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: Image.asset(
+                  'android/assets/cdc_logo.png',
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -1050,6 +1064,23 @@ class HomeTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                      ),
+                      child: Image.asset(
+                        'android/assets/cdc_logo.png',
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   RichText(
                     textAlign: TextAlign.center,
                     text: const TextSpan(
