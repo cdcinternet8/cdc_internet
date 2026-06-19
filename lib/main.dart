@@ -308,7 +308,7 @@ class ConfigService {
     final response = await http.get(
       Uri.parse('$sanitizedUrl/api/config'),
       headers: {'Cache-Control': 'no-cache, no-store'},
-    ).timeout(const Duration(seconds: 8));
+    ).timeout(const Duration(seconds: 45));
     if (response.statusCode == 200) {
       final parsed = jsonDecode(response.body);
       final newConfig = AppConfig.fromJson(parsed);
