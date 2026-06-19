@@ -1,0 +1,20 @@
+{
+  "contacts": {
+    "WhatsApp": "8801576526757",
+    "helpline": "+8801576526757"
+  },
+  "settings": {
+    "vatPercentage": 5,
+    "popularTag": "Most Popular",
+    "adminPin": "admin123",
+    "orderMsgTemplate": "Hello CDC!\n👤 Name ⇒ {name}\n📞 Phone ⇒ {phone}\n📍 Dist ⇒ {district}\n📦 Pkg ⇒ {package}\n🏠 Addr ⇒ {address}",
+    "supportMsgTemplate": "Support Help:\n👤 Name ⇒ {name}\n📞 Phone ⇒ {phone}\n📍 Dist ⇒ {district}\n🏠 Addr ⇒ {address}\n🛠️ Issue ⇒ {details}"
+  },
+  "packages": [
+    { "id": "1", "name": "STARTER FUN", "tag": "Browsing ⇒ Joy", "speed": "20 Mbps", "price": 500, "total": 525, "isPopular": false, "color": "#0ea5e9", "btnColor": "#10b981", "icon": "fa-dove", "vat": 5, "isGlowing": false },
+    { "id": "2", "name": "SUPER FAST", "tag": "Stream ⇒ No Worry", "speed": "30 Mbps", "price": 700, "total": 735, "isPopular": false, "icon": "fa-bolt-lightning", "color": "#64748b", "btnColor": "#0ea5e9", "vat": 5, "isGlowing": false },
+    { "id": "3", "name": "POWER FUN", "tag": "Lag-free ⇒ Fun", "speed": "40 Mbps", "price": 800, "total": 840, "isPopular": true, "color": "#f59e0b", "btnColor": "#f97316", "icon": "fa-fire-flame-curved", "vat": 5, "isGlowing": true },
+    { "id": "4", "name": "BLAZING", "tag": "Power User ⇒ Delight", "speed": "50 Mbps", "price": 900, "total": 945, "isPopular": false, "icon": "fa-droplet", "color": "#f43f5e", "btnColor": "#ec4899", "vat": 5, "isGlowing": false },
+    { "id": "5", "name": "ULTIMATE JOY", "tag": "Unlimited ⇒ Joy", "speed": "60 Mbps", "price": 1000, "total": 1050, "isPopular": false, "icon": "fa-crown", "color": "#0ea5e9", "btnColor": "#10b981", "vat": 5, "isGlowing": false }
+  ]
+}

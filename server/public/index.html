@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CDC INTERNET || Professional Mobile Hub</title>
+
+    <!-- PWA Config -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJzaG9ydF9uYW1lIjoiQ0RDIElOVEVSTkVUIiwibmFtZSI6IkNEQyBJTlRFUk5FVCIsInN0YXJ0X3VybCI6Ii4iLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFlNDBhZiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMWU0MGFmIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGicolNvbS81MTIvMzE3OC8zMTc4MTU4LnBuZyIsInR5cGUiOiJpbWFnZS9wbmciLCJzaXplcyI6IjE5MngxOTIifSx7InNyYyI6Imh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzMxNzgvMzE3ODE1OC5wbmciLCJ0eXBlIjoiaW1hZ2UvcG5nIiwic2l6ZXMiOiI1MTJ4NTEyIn1dfQ==">
+    <meta name="theme-color" content="#1e40af">
+
+    <!-- Tailwind CSS & Professional Icons -->
+    <script type="text/javascript" src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                        colors: { cdcBlue: '#1e40af', cdcAccent: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Mobile-First Base Fixes */
+        HTML, BODY { height: 100%; overflow: hidden; background: #f8fafc; color: #0f172a; position: fixed; width: 100%; }
+
+        /* App Layout Architecture */
+        .app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+        header { height: 72px; flex-shrink: 0; z-index: 50; background: white; border-bottom: 1px solid #f1f5f9; padding: 0 24px; display: flex; align-items: center; }
+        main { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-top: 24px; padding-right: 24px; padding-bottom: 120px; padding-left: 24px; }
+        nav { height: 80px; flex-shrink: 0; background: white; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-around; align-items: center; z-index: 50; }
+
+        /* Smooth View Transitions */
+        .spa-view { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Professional District Selector Bar (Native Feel) */
+        .custom-select-trigger { width: 100%; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; font-weight: 700; color: #1e293b; }
+        .custom-select-trigger:active { transform: scale(0.98); background: #e2e8f0; }
+
+        /* District Modal */
+        #districtModal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; display: none; }
+        .modal-content { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top-left-radius: 32px; border-top-right-radius: 32px; max-height: 80vh; overflow-y: auto; padding: 24px; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .district-item { padding: 16px 20px; border-bottom: 1px solid #f8fafc; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 12px; }
+        .district-item:active { background: #f1f5f9; border-radius: 12px; }
+
+        /* Visual Components */
+        .custom-shadow { box-shadow: 0 10px 30px -5px rgba(30, 64, 175, 0.08); }
+        .nav-active { color: #1e40af !important; font-weight: 900 !important; }
+        .btn-glow { box-shadow: 0 10px 25px -5px rgba(30, 64, 175, 0.3); }
+        .card-pop { border: 2px solid #1e40af; transform: scale(1.02); }
+        * { -webkit-tap-highlight-color: transparent; outline: none !important; }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <div class="app-container">
+        <!-- Header Branding: Left Aligned -->
+        <header>
+            <div class="w-full flex items-center justify-start">
+                <span class="text-2xl font-black text-slate-900 tracking-tighter uppercase">CDC INTERNET</span>
+            </div>
+        </header>
+
+        <!-- Dynamic Main Content -->
+        <main id="app-main">
+            <!-- Home View -->
+            <div id="home" class="spa-view space-y-12 text-center py-4">
+                <div class="space-y-6">
+                    <div>
+                        <span class="inline-flex items-center gap-2 bg-white border border-slate-200 px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest text-cdcBlue uppercase shadow-sm">
+                            <i class="fa-solid fa-bolt-lightning"></i> Nationwide Fiber • 64 Districts
+                        </span>
+                    </div>
+                    <div class="space-y-3">
+                        <h1 class="text-5xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                            Bangladesh's <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cdcBlue to-blue-600">Top-Rated Internet</span>
+                        </h1>
+                        <p class="text-xl font-extrabold text-amber-600">দেশজুড়ে আলোর গতি – মজা শুরু হয় এখান থেকে!</p>
+                    </div>
+                </div>
+
+                <!-- "Why CDC" Section -->
+                <div class="space-y-8 pt-4">
+                    <h2 class="text-3xl font-black text-slate-900">Why CDC is More Fun</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+
+                        <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-xl group">
+                            <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-gamepad"></i>
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-gamepad text-indigo-600 text-xs"></i>
+                                    <h3 class="font-black text-slate-900">No Lag Gaming</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-500 font-semibold leading-relaxed">Play Valorant, PUBG & Free Fire with low latency!</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-xl">
+                            <div class="w-12 h-12 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-film"></i>
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-clapperboard text-rose-400 text-xs"></i>
+                                    <h3 class="font-black text-slate-900 leading-tight">Movie Nights Without Buffering</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-500 font-semibold leading-relaxed">4K Netflix & YouTube — no spinning wheel!</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-xl">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-300 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-graduation-cap text-green-500 text-xs"></i>
+                                    <h3 class="font-black text-slate-900">Homework in Seconds</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-500 font-semibold leading-relaxed">Online classes, Zoom calls & research — smooth!</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-xl">
+                            <div class="w-12 h-12 bg-slate-50 text-slate-900 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-200">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-gift text-orange-500 text-xs"></i>
+                                    <h3 class="font-black text-slate-900 leading-tight">Free Installation = Instant Happiness</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-500 font-semibold leading-relaxed">Zero setup cost. We come, we install, you smile.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-xl">
+                            <div class="w-12 h-12 bg-[#E3F2FD] text-indigo-600 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-shield text-rose-400 text-xs"></i>
+                                    <h3 class="font-black text-slate-900 leading-tight">24/7 Support = We Got Your Back!</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-500 font-semibold leading-relaxed">Call us at 2 AM — we'll answer in minutes.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-all hover:shadow-xl">
+                            <div class="w-12 h-12 bg-[#E3F2FD] text-orange-500 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-face-smile"></i>
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-sun text-rose-400 text-xs"></i>
+                                    <h3 class="font-black text-slate-900">BD Pure Bangladeshi Joy</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-500 font-semibold leading-relaxed">Built for Bangladesh, loved by 64 districts.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Primary Actions -->
+                <div class="flex flex-col gap-4 pt-4">
+                    <a href="#packages" class="bg-cdcBlue text-white py-5 rounded-[24px] font-black shadow-xl uppercase tracking-widest text-sm btn-glow">View Packages</a>
+                    <a href="#support" class="bg-white border border-slate-200 text-slate-700 py-5 rounded-[24px] font-black text-sm">Support Hub</a>
+                </div>
+            </div>
+
+            <!-- Packages View -->
+            <div id="packages" class="spa-view hidden space-y-10 py-4">
+                <div class="text-center space-y-2">
+                    <h2 class="text-4xl font-black text-slate-900">Our Packages</h2>
+                    <p class="text-amber-600 uppercase tracking-widest text-[10px]">Pick the perfect plan</p>
+                </div>
+                <div id="packagesContainer" class="grid grid-cols-1 gap-6 pb-20"></div>
+            </div>
+
+            <!-- Coverage View -->
+            <div id="coverage" class="spa-view hidden space-y-10 py-4">
+                <div class="text-center space-y-2">
+                    <h2 class="text-4xl font-black text-slate-900">Coverage Area</h2>
+                    <p class="text-amber-600 uppercase tracking-widest text-[10px]">64 Districts Connected</p>
+                </div>
+                <div class="bg-white rounded-[32px] p-6 shadow-xl border border-slate-100">
+                    <div id="districtsGrid" class="grid grid-cols-2 gap-2"></div>
+                </div>
+            </div>
+
+            <!-- Support View -->
+            <div id="support" class="spa-view hidden space-y-8 py-4">
+                <div class="text-center space-y-2">
+                    <h2 class="text-4xl font-black text-slate-900">Support Hub</h2>
+                    <p class="text-amber-600 uppercase tracking-widest text-[10px]">Technical diagnostics</p>
+                </div>
+                <div class="bg-white p-8 rounded-[32px] shadow-xl border border-slate-100 space-y-6">
+                    <div class="space-y-4">
+                        <label class="block">
+                            <span class="sr-only">Full Name</span>
+                            <input id="supName" type="text" placeholder="Full Name" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:border-cdcBlue outline-none transition-all">
+                        </label>
+                        <label class="block">
+                            <span class="sr-only">Mobile Number</span>
+                            <input id="supPhone" type="tel" placeholder="Mobile Number" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:border-cdcBlue outline-none transition-all">
+                        </label>
+
+                        <div onclick="openDistrictModal('support')" class="custom-select-trigger" aria-label="Select District">
+                            <span id="supDistrictText">Select ⇒ District</span>
+                            <i class="fa-solid fa-chevron-down text-cdcBlue"></i>
+                        </div>
+                        <input type="hidden" id="supDistrict">
+
+                        <label class="block">
+                            <span class="sr-only">Detailed Address</span>
+                            <input id="supAddress" type="text" placeholder="Detailed Address" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:border-cdcBlue outline-none transition-all">
+                        </label>
+                        <label class="block">
+                            <span class="sr-only">Describe Issue</span>
+                            <textarea id="supDetails" rows="3" placeholder="Describe Issue" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-6 font-bold text-slate-900 focus:border-cdcBlue outline-none transition-all"></textarea>
+                        </label>
+                        <button onclick="submitSupport()" class="w-full bg-emerald-500 text-white py-5 rounded-[24px] font-black uppercase tracking-widest text-sm shadow-lg flex items-center justify-center gap-3"><i class="fa-brands fa-whatsapp text-lg"></i> Get Support</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Get Connected View -->
+            <div id="get-connected" class="spa-view hidden space-y-12 py-4">
+                <div class="text-center space-y-2">
+                    <h2 class="text-4xl font-black text-slate-900">Order Connection</h2>
+                    <p class="text-amber-600 uppercase tracking-widest text-[10px]">Onboarding Details</p>
+                </div>
+                <div class="bg-white p-8 rounded-[40px] shadow-xl border border-slate-100 space-y-6">
+                    <label class="block">
+                        <span class="sr-only">Full Name</span>
+                        <input id="formName" type="text" placeholder="Full Name" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:border-cdcBlue outline-none transition-all" required>
+                    </label>
+                    <label class="block">
+                        <span class="sr-only">Mobile Number</span>
+                        <input id="formPhone" type="tel" placeholder="Mobile Number" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:border-cdcBlue outline-none transition-all" required>
+                    </label>
+
+                    <div onclick="openDistrictModal('order')" class="custom-select-trigger" aria-label="Select District">
+                        <span id="orderDistrictText">Select ⇒ District</span>
+                        <i class="fa-solid fa-chevron-down text-cdcBlue"></i>
+                    </div>
+                    <input type="hidden" id="districtSelector">
+
+                    <div id="detailedPackageCard"></div>
+                    <input type="hidden" id="packageSelector">
+
+                    <label class="block">
+                        <span class="sr-only">Detailed Address</span>
+                        <input id="formAddress" type="text" placeholder="Detailed Address" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:border-cdcBlue outline-none transition-all" required>
+                    </label>
+                    <button onclick="submitOrder()" class="w-full bg-cdcBlue text-white py-6 rounded-[28px] font-black uppercase tracking-widest text-sm shadow-xl btn-glow flex items-center justify-center gap-3"><i class="fa-brands fa-whatsapp text-lg"></i> Send Order</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation: FIXED Solid Background -->
+        <nav>
+            <a href="#home" class="nav-link flex flex-col items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-house text-xl" aria-hidden="true"></i>
+                <span class="text-[9px] font-black uppercase">Home</span>
+            </a>
+            <a href="#packages" class="nav-link flex flex-col items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-layer-group text-xl" aria-hidden="true"></i>
+                <span class="text-[9px] font-black uppercase">Plans</span>
+            </a>
+            <a href="#coverage" class="nav-link flex flex-col items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-map-location-dot text-xl" aria-hidden="true"></i>
+                <span class="text-[9px] font-black uppercase">Coverage</span>
+            </a>
+            <a href="#support" class="nav-link flex flex-col items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-circle-question text-xl" aria-hidden="true"></i>
+                <span class="text-[9px] font-black uppercase">Support</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Professional App Notification -->
+    <div id="appNotification" class="fixed top-24 left-1/2 -translate-x-1/2 z-[150] transition-all duration-300 pointer-events-none opacity-0 scale-90 max-w-sm w-full px-4" role="alert">
+        <div class="bg-white text-slate-900 p-4 rounded-[28px] shadow-2xl flex items-center gap-4 border border-slate-100">
+            <div id="notifIcon" class="text-2xl shrink-0"></div>
+            <div class="space-y-0.5">
+                <p id="notifTitle" class="text-[10px] font-black uppercase tracking-widest text-cdcBlue">Alert</p>
+                <p id="notifMessage" class="text-xs font-semibold text-slate-600 leading-normal"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional District Selector Modal (Native App Style) -->
+    <div id="districtModal" onclick="closeDistrictModal()" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-6">
+                <div class="space-y-1">
+                    <h3 id="modalTitle" class="text-xl font-black text-slate-900">Select ⇒ District</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bangladesh Fiber Network</p>
+                </div>
+                <button onclick="closeDistrictModal()" class="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center transition-all hover:bg-slate-100" aria-label="Close Modal"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="modalList" class="space-y-1">
+                <!-- Districts dynamically injected -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const districtsA = ["Bagerhat", "Bandarban", "Barguna", "Barishal", "Bhola", "Bogura", "Brahmanbaria", "Chandpur"];
+        const districtsB = ["Chattogram", "Chuadanga", "Cox's Bazar", "Cumilla", "Dhaka", "Dinajpur", "Faridpur", "Feni"];
+        const districtsC = ["Gaibandha", "Gazipur", "Gopalganj", "Habiganj", "Jamalpur", "Jashore", "Jhalokati", "Jhenaidah"];
+        const districtsD = ["Joypurhat", "Khagrachhari", "Khulna", "Kishoreganj", "Kurigram", "Kushtia", "Lalmonirhat", "Laxmipur"];
+        const districtsE = ["Madaripur", "Magura", "Manikganj", "Meherpur", "Moulvibazar", "Munshiganj", "Mymensingh", "Naogaon"];
+        const districtsF = ["Narail", "Narayanganj", "Narsingdi", "Natore", "Chapainawabganj", "Netrokona", "Nilphamari", "Noakhali"];
+        const districtsG = ["Pabna", "Panchagarh", "Patuakhali", "Pirojpur", "Rajbari", "Rajshahi", "Rangamati", "Rangpur"];
+        const districtsH = ["Satkhira", "Shariatpur", "Sherpur", "Sirajganj", "Sunamganj", "Sylhet", "Tangail", "Thakurgaon"];
+        const districts = districtsA.concat(districtsB, districtsC, districtsD, districtsE, districtsF, districtsG, districtsH);
+
+        // Configure backend endpoint URL
+        // If loaded locally via file:// protocol, specify the hosted server address.
+        // If loaded online via http/https, use the same host relatively.
+        const API_BASE_URL = window.location.protocol.startsWith('file') 
+            ? 'http://10.0.2.2:3000' // Defaults to Android Emulator localhost alias for testing
+            : '';
+
+        const defaultAppConfig = {
+            contacts: { WhatsApp: "8801576526757" },
+            settings: {
+                vatPercentage: 5,
+                popularTag: "Most Popular",
+                orderMsgTemplate: "Hello CDC!\n👤 Name ⇒ {name}\n📞 Phone ⇒ {phone}\n📍 Dist ⇒ {district}\n📦 Pkg ⇒ {package}\n🏠 Addr ⇒ {address}",
+                supportMsgTemplate: "Support Help:\n👤 Name ⇒ {name}\n📞 Phone ⇒ {phone}\n📍 Dist ⇒ {district}\n🏠 Addr ⇒ {address}\n🛠️ Issue ⇒ {details}"
+            },
+            packages: [
+                { id: '1', name: 'STARTER FUN', tag: 'Browsing ⇒ Joy', speed: '20 Mbps', price: 500, total: 525, isPopular: false, color: '#0ea5e9', btnColor: '#10b981', icon: 'fa-dove', vat: 5, isGlowing: false },
+                { id: '2', name: 'SUPER FAST', tag: 'Stream ⇒ No Worry', speed: '30 Mbps', price: 700, total: 735, isPopular: false, icon: 'fa-bolt-lightning', color: '#64748b', btnColor: '#0ea5e9', vat: 5, isGlowing: false },
+                { id: '3', name: 'POWER FUN', tag: 'Lag-free ⇒ Fun', speed: '40 Mbps', price: 800, total: 840, isPopular: true, color: '#f59e0b', btnColor: '#f97316', icon: 'fa-fire-flame-curved', vat: 5, isGlowing: true },
+                { id: '4', name: 'BLAZING', tag: 'Power User ⇒ Delight', speed: '50 Mbps', price: 900, total: 945, isPopular: false, icon: 'fa-droplet', color: '#f43f5e', btnColor: '#ec4899', vat: 5, isGlowing: false },
+                { id: '5', name: 'ULTIMATE JOY', tag: 'Unlimited ⇒ Joy', speed: '60 Mbps', price: 1000, total: 1050, isPopular: false, icon: 'fa-crown', color: '#0ea5e9', btnColor: '#10b981', vat: 5, isGlowing: false }
+            ]
+        };
+
+        function getAppConfig() {
+            try {
+                const stored = localStorage.getItem('cdc_app_config');
+                if (!stored) return defaultAppConfig;
+                const parsed = JSON.parse(stored);
+                return {
+                    contacts: { ...defaultAppConfig.contacts, ...(parsed.contacts || {}) },
+                    settings: { ...defaultAppConfig.settings, ...(parsed.settings || {}) },
+                    packages: parsed.packages || defaultAppConfig.packages
+                };
+            } catch (e) {
+                console.error("Config cache load fail:", e);
+                return defaultAppConfig;
+            }
+        }
+
+        let appConfig = getAppConfig();
+
+        function syncConfigFromServer() {
+            const url = `${API_BASE_URL}/api/config`;
+            console.log("Syncing config from:", url);
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error("HTTP " + response.status);
+                    return response.json();
+                })
+                .then(serverConfig => {
+                    if (serverConfig && serverConfig.packages) {
+                        const localStr = localStorage.getItem('cdc_app_config');
+                        const serverStr = JSON.stringify(serverConfig);
+                        if (localStr !== serverStr) {
+                            console.log("Configuration updated from server!");
+                            localStorage.setItem('cdc_app_config', serverStr);
+                            appConfig.contacts = serverConfig.contacts || appConfig.contacts;
+                            appConfig.settings = serverConfig.settings || appConfig.settings;
+                            appConfig.packages = serverConfig.packages || appConfig.packages;
+                            renderPackages();
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.warn("Failed to sync config from server. Using offline cache:", err);
+                });
+        }
+        let currentModalTarget = '';
+
+        const renderDistricts = function() {
+            let gridHtml = '';
+            districts.forEach(function(d) {
+                gridHtml += `<div class="bg-slate-50 p-3 rounded-xl border border-slate-100 `;
+                gridHtml += `text-center font-bold text-slate-600 text-[10px]">${d}</div>`;
+            });
+            const dg = document.getElementById('districtsGrid');
+            if(dg) dg.innerHTML = gridHtml;
+
+            let listHtml = '';
+            districts.forEach(function(d) {
+                listHtml += `<div onclick="selectDistrict('${d}')" class="district-item">`;
+                listHtml += `<i class="fa-solid fa-location-dot text-cdcBlue/20"></i> ${d}</div>`;
+            });
+            const ml = document.getElementById('modalList');
+            if(ml) ml.innerHTML = listHtml;
+        };
+
+        function renderPackages() {
+            const container = document.getElementById('packagesContainer');
+            if(!container) return;
+            container.innerHTML = appConfig.packages.map(function(pkg) {
+                const vatRate = pkg.vat || appConfig.settings.vatPercentage || 0;
+                const priceLabel = `৳${pkg.total - pkg.price}`;
+                const glowClass = pkg.isGlowing ? 'btn-glow' : '';
+                return `
+                <div class="bg-white rounded-[32px] p-8 ${pkg.isPopular ? 'card-pop custom-shadow' : 'border border-slate-100'} text-center space-y-6">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto" style="background: ${pkg.color}15; color: ${pkg.color}">
+                        <i class="fa-solid ${pkg.icon}"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-xs font-black text-cdcBlue uppercase tracking-widest">${pkg.name}</h3>
+                        <div class="flex items-baseline justify-center gap-1">
+                            <span class="text-5xl font-black text-slate-900">${pkg.price}</span>
+                            <span class="text-lg font-bold">TK</span>
+                        </div>
+                        <p class="text-xl font-black text-slate-800">${pkg.speed}</p>
+                        <div class="flex flex-col gap-0.5">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">+${vatRate}% VAT ⇒ ${priceLabel}</p>
+                            <p class="text-xs font-black text-slate-900">Total ⇒ ৳${pkg.total} TK</p>
+                        </div>
+                    </div>
+                    <button onclick="selectPackage('${pkg.id}')"
+                        class="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all active:scale-95 ${glowClass}"
+                        style="background: ${pkg.btnColor}">Select ⇒</button>
+                </div>
+            `;
+            }).join('');
+        }
+
+        const openDistrictModal = function(target) {
+            currentModalTarget = target;
+            const dm = document.getElementById('districtModal');
+            if(dm) dm.style.display = 'block';
+        };
+        const closeDistrictModal = function() {
+            const dm = document.getElementById('districtModal');
+            if(dm) dm.style.display = 'none';
+        };
+
+        const selectDistrict = function(d) {
+            if(currentModalTarget === 'support') {
+                const sdv = document.getElementById('supDistrict');
+                const sdt = document.getElementById('supDistrictText');
+                if(sdv) sdv.value = d;
+                if(sdt) {
+                    sdt.innerText = d;
+                    sdt.classList.add('text-slate-900');
+                }
+            } else {
+                const ds = document.getElementById('districtSelector');
+                const odt = document.getElementById('orderDistrictText');
+                if(ds) ds.value = d;
+                if(odt) {
+                    odt.innerText = d;
+                    odt.classList.add('text-slate-900');
+                }
+            }
+            closeDistrictModal();
+        };
+
+        const selectPackage = function(id) {
+            const pkg = appConfig.packages.find(function(p) { return p.id === id; });
+            if(!pkg) return;
+            const vatRate = pkg.vat || appConfig.settings.vatPercentage || 0;
+            const dpc = document.getElementById('detailedPackageCard');
+            if(dpc) {
+                dpc.innerHTML = `
+                    <div class="space-y-1">
+                        <h4 class="font-black text-slate-900">${pkg.name}</h4>
+                        <p class="text-xs font-black text-cdcBlue">${pkg.speed} ⇒ ৳${pkg.price}</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">+${vatRate}% VAT ⇒ ৳${pkg.total - pkg.price}</p>
+                        <p class="text-sm font-black text-slate-900 pt-1">Grand Total ⇒ ৳${pkg.total}</p>
+                    </div>`;
+            }
+            const ps = document.getElementById('packageSelector');
+            if(ps) ps.value = pkg.name + " (" + pkg.speed + ")";
+            window.location.hash = "#get-connected";
+        };
+
+        const navigate = function() {
+            const hash = window.location.hash || '#home';
+            document.querySelectorAll('.spa-view').forEach(function(v) { v.classList.add('hidden'); });
+            const target = document.getElementById(hash.replace('#', ''));
+            if (target) target.classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(function(l) {
+                l.classList.remove('nav-active');
+                if (l.getAttribute('href') === hash) l.classList.add('nav-active');
+            });
+            const am = document.getElementById('app-main');
+            if(am) am.scrollTo(0,0);
+        };
+
+        const showToast = function(msg) {
+            const box = document.getElementById('appNotification');
+            const nm = document.getElementById('notifMessage');
+            const ni = document.getElementById('notifIcon');
+            if(!box || !nm || !ni) return;
+
+            nm.innerText = msg;
+            ni.innerHTML = '<i class="fa-solid fa-circle-exclamation text-rose-500"></i>';
+            box.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+            box.classList.add('opacity-100', 'scale-100');
+            setTimeout(function() {
+                box.classList.remove('opacity-100', 'scale-100');
+                box.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+            }, 3000);
+        };
+
+        const submitOrder = function() {
+            const sn = document.getElementById('formName');
+            const sp = document.getElementById('formPhone');
+            const ds = document.getElementById('districtSelector');
+            const sa = document.getElementById('formAddress');
+            const ps = document.getElementById('packageSelector');
+
+            const data = {
+                name: sn ? sn.value.trim() : "",
+                phone: sp ? sp.value.trim() : "",
+                district: ds ? ds.value : "",
+                address: sa ? sa.value.trim() : "",
+                package: ps ? ps.value : ""
+            };
+
+            if (!data.name || !data.phone || !data.district || !data.address || !data.package) {
+                showToast("Please fill all onboarding fields");
+                return;
+            }
+
+            const tmpl = (appConfig.settings && appConfig.settings.orderMsgTemplate) || "";
+            const msg = tmpl
+                .replace(/{name}/g, data.name)
+                .replace(/{phone}/g, data.phone)
+                .replace(/{district}/g, data.district)
+                .replace(/{address}/g, data.address)
+                .replace(/{package}/g, data.package);
+
+            const waNum = (appConfig.contacts && appConfig.contacts.WhatsApp) || "8801576526757";
+            const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
+        };
+
+        const submitSupport = function() {
+            const sn = document.getElementById('supName');
+            const sp = document.getElementById('supPhone');
+            const sd = document.getElementById('supDistrict');
+            const sa = document.getElementById('supAddress');
+            const det = document.getElementById('supDetails');
+
+            const data = {
+                name: sn ? sn.value.trim() : "",
+                phone: sp ? sp.value.trim() : "",
+                district: sd ? sd.value : "",
+                address: sa ? sa.value.trim() : "",
+                details: det ? det.value.trim() : ""
+            };
+
+            if (!data.name || !data.phone || !data.district || !data.address || !data.details) {
+                showToast("Please fill all diagnostic fields");
+                return;
+            }
+
+            const tmpl = (appConfig.settings && appConfig.settings.supportMsgTemplate) || "";
+            const msg = tmpl
+                .replace(/{name}/g, data.name)
+                .replace(/{phone}/g, data.phone)
+                .replace(/{district}/g, data.district)
+                .replace(/{address}/g, data.address)
+                .replace(/{details}/g, data.details);
+
+            const waNum = (appConfig.contacts && appConfig.contacts.WhatsApp) || "8801576526757";
+            const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
+        };
+
+        window.addEventListener('hashchange', navigate);
+        window.addEventListener('DOMContentLoaded', function() {
+            renderDistricts();
+            renderPackages();
+            navigate();
+            syncConfigFromServer();
+        });
+    </script>
+</body>
+</html>
