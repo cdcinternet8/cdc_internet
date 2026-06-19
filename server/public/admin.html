@@ -79,6 +79,15 @@
         <p class="text-slate-500 font-semibold">Complete control over packages, VAT, and system configurations.</p>
     </div>
 
+    <!-- Render Persistence Notice -->
+    <div class="bg-blue-50/50 border border-blue-200/60 p-6 rounded-3xl text-sm flex gap-4 items-start text-blue-900 shadow-sm">
+        <div class="text-2xl text-cdcBlue"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <div class="space-y-1">
+            <p class="font-black uppercase tracking-wider text-[10px] text-cdcBlue">Render Cloud Persistence Tip</p>
+            <p class="text-xs font-medium text-slate-600">On Render's Free Tier, server configuration edits reset to the GitHub state when the server sleeps. To make your changes permanent, use the <strong>Download config.json</strong> button at the bottom, save the file to your project's <code>server/</code> folder, and push to GitHub.</p>
+        </div>
+    </div>
+
     <!-- Section 1: Core Contacts & Security -->
     <div class="bg-white p-10 rounded-[48px] border border-slate-100 shadow-xl space-y-8">
         <h3 class="text-xl font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
@@ -162,7 +171,10 @@
         <button onclick="saveAdminSettings()" class="flex-grow bg-cdcBlue hover:bg-blue-800 text-white font-black py-6 rounded-[32px] transition-all shadow-2xl shadow-blue-900/40 text-sm uppercase tracking-widest">
             Save All Configurations
         </button>
-        <button onclick="resetAdminSettings()" class="bg-white hover:bg-slate-100 text-slate-800 font-black px-10 py-6 rounded-[32px] transition-all text-sm uppercase tracking-widest border border-slate-200 shadow-lg">
+        <button onclick="downloadConfigJson()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-8 py-6 rounded-[32px] transition-all text-sm uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+            Download config.json
+        </button>
+        <button onclick="resetAdminSettings()" class="bg-white hover:bg-slate-100 text-slate-800 font-black px-8 py-6 rounded-[32px] transition-all text-sm uppercase tracking-widest border border-slate-200 shadow-lg">
             Reset
         </button>
     </div>
@@ -507,6 +519,26 @@
                 saveBtn.disabled = false;
             }
         });
+    }
+
+    function downloadConfigJson() {
+        saveTemp();
+        appConfig.contacts.WhatsApp = document.getElementById('adminWhatsApp').value;
+        appConfig.contacts.helpline = document.getElementById('adminPhone').value;
+        appConfig.settings.adminPin = document.getElementById('adminPinConfig').value;
+        appConfig.settings.vatPercentage = parseFloat(document.getElementById('adminVat').value) || 0;
+        appConfig.settings.popularTag = document.getElementById('adminPopularTag').value;
+        appConfig.settings.orderMsgTemplate = document.getElementById('adminOrderTemplate').value;
+        appConfig.settings.supportMsgTemplate = document.getElementById('adminSupportTemplate').value;
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appConfig, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "config.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        showAppNotification("config.json downloaded! Place it in the server/ folder and push to GitHub.", "success");
     }
 
     function resetAdminSettings() {
