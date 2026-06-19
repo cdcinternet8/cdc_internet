@@ -301,8 +301,12 @@ class ConfigService {
   }
 
   static Future<AppConfig> fetchConfigFromServer(String baseUrl) async {
+    String sanitizedUrl = baseUrl.trim();
+    while (sanitizedUrl.endsWith('/')) {
+      sanitizedUrl = sanitizedUrl.substring(0, sanitizedUrl.length - 1).trim();
+    }
     final response = await http.get(
-      Uri.parse('$baseUrl/api/config'),
+      Uri.parse('$sanitizedUrl/api/config'),
       headers: {'Cache-Control': 'no-cache, no-store'},
     ).timeout(const Duration(seconds: 8));
     if (response.statusCode == 200) {
@@ -343,7 +347,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   Timer? _autoRefreshTimer;
   static const Duration _pollInterval = Duration(seconds: 15);
   bool _syncError = false;
-  DateTime? _lastSyncTime;
 
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
@@ -434,15 +437,34 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         _config = fresh;
         _isOnline = true;
         _syncError = false;
-        _lastSyncTime = DateTime.now();
       });
       debugPrint('Config synced from server at $_currentApiUrl');
+      if (showOverlay && mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Successfully synced with server! Data is up to date.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } catch (e) {
       debugPrint('Sync failed [$_currentApiUrl]: $e');
       setState(() {
         _isOnline = false;
         _syncError = true;
       });
+      if (showOverlay && mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Connection failed: $e. Using offline cache.'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
     } finally {
       if (showOverlay) {
         final elapsed = DateTime.now().difference(startTime).inMilliseconds;
@@ -640,7 +662,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         ),
         body: Column(
           children: [
-            // Server error banner — shown when server is unreachable
             AnimatedSize(
               duration: const Duration(milliseconds: 250),
               child: _syncError
@@ -661,7 +682,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                                 color: Colors.white,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                letterSpacing: 0.2,
                               ),
                             ),
                           ],
@@ -672,92 +692,84 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
             ),
             Expanded(
               child: RefreshIndicator(
-          key: _refreshIndicatorKey,
-          onRefresh: () => _syncConfig(showOverlay: true),
-          color: const Color(0xFF1E40AF),
-          backgroundColor: Colors.white,
-          displacement: 20,
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification notification) {
-              if (notification.depth == 0) {
-                if (notification.metrics.pixels <= 0.0) {
-                  _scrollIsAtTop = true;
-                } else {
-                  _scrollIsAtTop = false;
-                }
-              }
-              return false;
-            },
-            child: Listener(
-              onPointerDown: (PointerDownEvent event) {
-                _pointerDownY = event.position.dy;
-                _canTriggerRefresh = _scrollIsAtTop;
-              },
-              onPointerMove: (PointerMoveEvent event) {
-                if (_pointerDownY == null || !_canTriggerRefresh || _isSyncing) return;
-
-                final dragDistance = event.position.dy - _pointerDownY!;
-                if (dragDistance > 120.0) {
-                  _pointerDownY = null;
-                  _canTriggerRefresh = false;
-                  _refreshIndicatorKey.currentState?.show();
-                }
-              },
-              onPointerUp: (PointerUpEvent event) {
-                _pointerDownY = null;
-                _canTriggerRefresh = false;
-              },
-              onPointerCancel: (PointerCancelEvent event) {
-                _pointerDownY = null;
-                _canTriggerRefresh = false;
-              },
-              child: IndexedStack(
-                index: _currentIndex,
-                children: [
-                  HomeTab(
-                    onViewPlans: () => setState(() {
-                      _currentIndex = 1;
-                      _scrollIsAtTop = true;
-                    }),
-                    onViewCoverage: () => setState(() {
-                      _currentIndex = 2;
-                      _scrollIsAtTop = true;
-                    }),
-                    onViewSupport: () => setState(() {
-                      _currentIndex = 3;
-                      _scrollIsAtTop = true;
-                    }),
-                    isOnline: _isOnline,
-                    onRefresh: () => _syncConfig(showOverlay: true),
-                    showSyncOverlay: _showSyncOverlay,
+                key: _refreshIndicatorKey,
+                onRefresh: () => _syncConfig(showOverlay: true),
+                color: const Color(0xFF1E40AF),
+                backgroundColor: Colors.white,
+                displacement: 20,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification notification) {
+                    if (notification.depth == 0) {
+                      if (notification.metrics.pixels <= 0.0) {
+                        _scrollIsAtTop = true;
+                      } else {
+                        _scrollIsAtTop = false;
+                      }
+                    }
+                    return false;
+                  },
+                  child: Listener(
+                    onPointerDown: (PointerDownEvent event) {
+                      _pointerDownY = event.position.dy;
+                      _canTriggerRefresh = _scrollIsAtTop;
+                    },
+                    onPointerMove: (PointerMoveEvent event) {
+                      if (_pointerDownY == null || !_canTriggerRefresh || _isSyncing) return;
+                      final dragDistance = event.position.dy - _pointerDownY!;
+                      if (dragDistance > 120.0) {
+                        _pointerDownY = null;
+                        _canTriggerRefresh = false;
+                        _refreshIndicatorKey.currentState?.show();
+                      }
+                    },
+                    onPointerUp: (PointerUpEvent event) {
+                      _pointerDownY = null;
+                      _canTriggerRefresh = false;
+                    },
+                    onPointerCancel: (PointerCancelEvent event) {
+                      _pointerDownY = null;
+                      _canTriggerRefresh = false;
+                    },
+                    child: IndexedStack(
+                      index: _currentIndex,
+                      children: [
+                        HomeTab(
+                          onViewPlans: () => setState(() { _currentIndex = 1; _scrollIsAtTop = true; }),
+                          onViewCoverage: () => setState(() { _currentIndex = 2; _scrollIsAtTop = true; }),
+                          onViewSupport: () => setState(() { _currentIndex = 3; _scrollIsAtTop = true; }),
+                          isOnline: _isOnline,
+                          onRefresh: () => _syncConfig(showOverlay: true),
+                          showSyncOverlay: _showSyncOverlay,
+                        ),
+                        PlansTab(
+                          packages: _config.packages,
+                          popularTag: _config.popularTag,
+                          vatPercentage: _config.vatPercentage,
+                          onSelectPlan: _navigateToOrder,
+                          showSyncOverlay: _showSyncOverlay,
+                        ),
+                        CoverageTab(showSyncOverlay: _showSyncOverlay),
+                        SupportTab(
+                          whatsappNum: _config.whatsapp,
+                          helplineNum: _config.helpline,
+                          supportTemplate: _config.supportMsgTemplate,
+                          showSyncOverlay: _showSyncOverlay,
+                        ),
+                        OrderTab(
+                          whatsappNum: _config.whatsapp,
+                          orderTemplate: _config.orderMsgTemplate,
+                          selectedPlan: _selectedPlan,
+                          showSyncOverlay: _showSyncOverlay,
+                        ),
+                      ],
+                    ),
                   ),
-                  PlansTab(
-                    packages: _config.packages,
-                    popularTag: _config.popularTag,
-                    vatPercentage: _config.vatPercentage,
-                    onSelectPlan: _navigateToOrder,
-                    showSyncOverlay: _showSyncOverlay,
-                  ),
-                  CoverageTab(
-                    showSyncOverlay: _showSyncOverlay,
-                  ),
-                  SupportTab(
-                    whatsappNum: _config.whatsapp,
-                    helplineNum: _config.helpline,
-                    supportTemplate: _config.supportMsgTemplate,
-                    showSyncOverlay: _showSyncOverlay,
-                  ),
-                  OrderTab(
-                    whatsappNum: _config.whatsapp,
-                    orderTemplate: _config.orderMsgTemplate,
-                    selectedPlan: _selectedPlan,
-                    showSyncOverlay: _showSyncOverlay,
-                  ),
-                ],
+                ),
               ),
             ),
           ],
         ),
+
         bottomNavigationBar: _currentIndex == 0
             ? null
             : BottomNavigationBar(
