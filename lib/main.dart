@@ -310,6 +310,14 @@ class ConfigService {
     while (sanitizedUrl.endsWith('/')) {
       sanitizedUrl = sanitizedUrl.substring(0, sanitizedUrl.length - 1).trim();
     }
+    if (sanitizedUrl.endsWith('/api/config')) {
+      sanitizedUrl = sanitizedUrl.substring(0, sanitizedUrl.length - 11).trim();
+    } else if (sanitizedUrl.endsWith('api/config')) {
+      sanitizedUrl = sanitizedUrl.substring(0, sanitizedUrl.length - 10).trim();
+    }
+    while (sanitizedUrl.endsWith('/')) {
+      sanitizedUrl = sanitizedUrl.substring(0, sanitizedUrl.length - 1).trim();
+    }
     final response = await http.get(
       Uri.parse('$sanitizedUrl/api/config'),
       headers: {'Cache-Control': 'no-cache, no-store'},
@@ -444,16 +452,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         _syncError = false;
       });
       debugPrint('Config synced from server at $_currentApiUrl');
-      if (showOverlay && mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully synced with server! Data is up to date.'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+
     } catch (e) {
       debugPrint('Sync failed [$_currentApiUrl]: $e');
       setState(() {
@@ -631,39 +630,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: GestureDetector(
-                onTap: () => _syncConfig(showOverlay: false),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 400),
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _isSyncing
-                        ? const Color(0xFFF59E0B)   // orange = syncing
-                        : _syncError
-                            ? const Color(0xFFEF4444) // red = error
-                            : const Color(0xFF10B981), // green = live
-                    boxShadow: [
-                      BoxShadow(
-                        color: (_isSyncing
-                                ? const Color(0xFFF59E0B)
-                                : _syncError
-                                    ? const Color(0xFFEF4444)
-                                    : const Color(0xFF10B981))
-                            .withValues(alpha: 0.5),
-                        blurRadius: 6,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
         body: Column(
           children: [
