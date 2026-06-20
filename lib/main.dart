@@ -613,40 +613,37 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       ),
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(72.0),
-          child: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.transparent,
-            shadowColor: const Color(0xFF1E40AF).withValues(alpha: 0.05),
-            title: GestureDetector(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: const Color(0xFF1E40AF).withValues(alpha: 0.05),
+          title: GestureDetector(
+            onTap: _handleLogoTap,
+            child: const Text(
+              'CDC INTERNET',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 22,
+                letterSpacing: -1,
+                color: Color(0xFF0F172A),
+              ),
+            ),
+          ),
+          actions: [
+            GestureDetector(
               onTap: _handleLogoTap,
-              child: const Text(
-                'CDC INTERNET',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 22,
-                  letterSpacing: -1,
-                  color: Color(0xFF0F172A),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Image.asset(
+                  'android/assets/cdc_logo.png',
+                  width: 52,
+                  height: 52,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
-            actions: [
-              GestureDetector(
-                onTap: _handleLogoTap,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: Image.asset(
-                    'android/assets/cdc_logo.png',
-                    width: 58,
-                    height: 58,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
         body: Column(
           children: [
