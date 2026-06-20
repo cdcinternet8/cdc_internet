@@ -613,37 +613,40 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       ),
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.transparent,
-          shadowColor: const Color(0xFF1E40AF).withValues(alpha: 0.05),
-          title: GestureDetector(
-            onTap: _handleLogoTap,
-            child: const Text(
-              'CDC INTERNET',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 22,
-                letterSpacing: -1,
-                color: Color(0xFF0F172A),
-              ),
-            ),
-          ),
-          actions: [
-            GestureDetector(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(72.0),
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: const Color(0xFF1E40AF).withValues(alpha: 0.05),
+            title: GestureDetector(
               onTap: _handleLogoTap,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Image.asset(
-                  'android/assets/cdc_logo.png',
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.contain,
+              child: const Text(
+                'CDC INTERNET',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 22,
+                  letterSpacing: -1,
+                  color: Color(0xFF0F172A),
                 ),
               ),
             ),
-          ],
+            actions: [
+              GestureDetector(
+                onTap: _handleLogoTap,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Image.asset(
+                    'android/assets/cdc_logo.png',
+                    width: 58,
+                    height: 58,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         body: Column(
           children: [
@@ -2101,6 +2104,10 @@ class _PlansTabState extends State<PlansTab> {
                                           'Base ⇒ ৳${plan.price}',
                                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9, color: Color(0xFF94A3B8)),
                                         ),
+                                        const Text(
+                                          'Installation Charge: FREE',
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9, color: Color(0xFF10B981)),
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -2110,10 +2117,7 @@ class _PlansTabState extends State<PlansTab> {
                                 // ISP Features Bullets
                                 const Column(
                                   children: [
-                                    ISPBullet(text: 'Unlimited High-Speed Fiber Data'),
-                                    ISPBullet(text: 'Low Latency Direct Routing (Gaming Support)'),
-                                    ISPBullet(text: 'Real IP / Optical Router Options Available'),
-                                    ISPBullet(text: '24/7 Priority Support Dispatch'),
+                                    ISPBullet(text: 'Free Installation'),
                                   ],
                                 ),
                                 const SizedBox(height: 20),
@@ -2997,6 +3001,13 @@ class _OrderTabState extends State<OrderTab> {
                                           children: [
                                             Text('VAT (${widget.selectedPlan!.vat}%)', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF90CAF9))),
                                             Text('৳${widget.selectedPlan!.total - widget.selectedPlan!.price} TK', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Color(0xFF1E40AF))),
+                                          ],
+                                        ),
+                                        const Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('Installation Charge', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF90CAF9))),
+                                            Text('FREE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Color(0xFF22C55E))),
                                           ],
                                         ),
                                         const Divider(color: Color(0xFFF59E0B), height: 20),
